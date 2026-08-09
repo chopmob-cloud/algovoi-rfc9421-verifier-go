@@ -1,0 +1,19 @@
+algovoi-rfc9421-verifier-go
+Copyright 2026 Christopher Hopley / AlgoVoi (chopmob-cloud)
+
+This product is part of the AlgoVoi agentic-payments substrate, authored by
+Christopher Hopley (AlgoVoi) and licensed under the Apache License, Version 2.0.
+
+It is a Go port of algovoi-rfc9421-verifier (Python/TypeScript reference
+implementations) and reproduces the reference signing-base construction,
+Signature-Input/Signature parsing, Ed25519 public-key gate, and Content-Digest
+and freshness checks byte-for-byte. The separate ecdsa add-on package provides
+the RFC 9421 ecdsa-p256-sha256 and ecdsa-p384-sha384 verifiers and depends on the
+core package (the core never depends on the add-on).
+
+The canonicalisation discipline (urn:x402:canonicalisation:jcs-rfc8785-v1) is
+specified in IETF Internet-Draft draft-hopley-x402-canonicalisation-jcs-v1 and
+documented at https://docs.algovoi.co.uk/canonicalisation-substrate.
+
+When redistributing this work or derivative works, retain this NOTICE per
+Apache License, Version 2.0, Section 4(d).
