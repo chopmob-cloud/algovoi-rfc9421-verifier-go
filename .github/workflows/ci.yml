@@ -34,12 +34,12 @@ jobs:
         with:
           go-version-file: go.mod
 
-      # Scoped to the negative battery only -- the exact target the conformance
-      # consensus job runs for the Go column. The repo's other suites
-      # (TestFrozenVectors*, TestSharedVectorsCrossLanguageParity) read reference
-      # vectors from the separate algovoi-rfc9421-verifier-multilang repo and are
-      # gated elsewhere; running them here would require that third checkout.
-      - name: go test (rfc9421_negative v3, all seven sections incl. rsa_verify)
+      # Full suite. The negative battery runs against the signed v3 corpus (all
+      # seven sections incl. rsa_verify); the repo's frozen-vector and
+      # shared-vector suites read reference vectors from the separate
+      # algovoi-rfc9421-verifier-multilang repo, which is not checked out here, so
+      # they skip cleanly rather than fail. Every self-contained unit test runs.
+      - name: go test (full suite; rfc9421_negative v3 against the signed corpus)
         env:
           ALGOVOI_NEGATIVE_V1: ${{ github.workspace }}/_conformance/corpus/rfc9421_negative_v3/rfc9421_negative_v3.json
-        run: go test ./ecdsa -run TestNegativeV1 -count=1 -v
+        run: go test ./... -count=1
