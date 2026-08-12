@@ -31,8 +31,11 @@ type sharedVectors struct {
 	P384 []sharedVector `json:"p384"`
 }
 
-// Relative to this package directory (go test sets the CWD to the package dir),
-// pointing at the sibling multilang repo that holds the shared vectors.
+// Default relative to this package directory (go test sets the CWD to the
+// package dir), pointing at the sibling multilang repo that holds the shared
+// vectors. Override with ALGOVOI_REFERENCE_ECDSA_VECTORS; when neither resolves,
+// the test skips rather than fails, so the suite stays green without that
+// third checkout.
 const sharedVectorsPath = "../../algovoi-rfc9421-verifier-multilang/vectors/reference_ecdsa_v0.json"
 
 func runSharedVectors(t *testing.T, vectors []sharedVector, verify verifierFunc, label string) (pass, total int) {
@@ -65,9 +68,13 @@ func runSharedVectors(t *testing.T, vectors []sharedVector, verify verifierFunc,
 }
 
 func TestSharedVectorsCrossLanguageParity(t *testing.T) {
-	data, err := os.ReadFile(sharedVectorsPath)
+	path := os.Getenv("ALGOVOI_REFERENCE_ECDSA_VECTORS")
+	if path == "" {
+		path = sharedVectorsPath
+	}
+	data, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("read shared vectors %q: %v", sharedVectorsPath, err)
+		t.Skipf("shared vectors not available at %q (%v); set ALGOVOI_REFERENCE_ECDSA_VECTORS to run", path, err)
 	}
 	var vectors sharedVectors
 	if err := json.Unmarshal(data, &vectors); err != nil {
