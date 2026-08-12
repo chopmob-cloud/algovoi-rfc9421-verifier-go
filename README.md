@@ -1,5 +1,7 @@
 # algovoi-rfc9421-verifier-go
 
+[![ci](https://github.com/chopmob-cloud/algovoi-rfc9421-verifier-go/actions/workflows/ci.yml/badge.svg)](https://github.com/chopmob-cloud/algovoi-rfc9421-verifier-go/actions/workflows/ci.yml)
+
 A Go implementation of the AlgoVoi RFC 9421 (HTTP Message Signatures) plus
 RFC 9530 (Content-Digest) verifier, laid out as TWO independent packages that
 mirror the Python / TypeScript "pure add-on" architecture:
@@ -36,11 +38,36 @@ cross-language reference vectors.
   bytes), point-on-curve validation, `r, s` in `[1, n-1]`, and optional strict
   low-s enforcement (off by default via `ecdsa.SetStrictLowS`).
 
+## Cross-language conformance battery
+
+This verifier is one implementation in the twelve-way
+[algovoi-rfc9421-conformance](https://github.com/chopmob-cloud/algovoi-rfc9421-conformance)
+consensus. The `ecdsa/negative_v1_test.go` runner reads that repo's one frozen,
+signed corpus (`rfc9421_negative_v3`, 96 cases across seven sections) and must
+reproduce the reference verdict byte-for-byte per case: signing-base
+construction (both modes), `Signature-Input` / `Signature` parsing, the Ed25519
+small-order key gate, Ed25519 verify, ECDSA P-256/P-384 verify, and (v3)
+**RSA-PSS-SHA512 / RSA-PKCS1v1.5-SHA256** verify from an SPKI key via the Go
+standard library. It exits 0 iff every case matches.
+
+CI (`.github/workflows/ci.yml`) gates every push and pull request on this
+battery against the signed v3 corpus, so a divergence from the shared oracle,
+including the RSA cases, fails the build.
+
 ## Build and test
 
 ```
 go build ./...
 go test ./...
+```
+
+To run the conformance battery against the signed corpus, check out
+`algovoi-rfc9421-conformance` and point `ALGOVOI_NEGATIVE_V1` at
+`corpus/rfc9421_negative_v3/rfc9421_negative_v3.json`:
+
+```
+ALGOVOI_NEGATIVE_V1=/path/to/algovoi-rfc9421-conformance/corpus/rfc9421_negative_v3/rfc9421_negative_v3.json \
+  go test ./ecdsa -run TestNegativeV1
 ```
 
 The frozen-vector test reads
