@@ -71,7 +71,7 @@ ALGOVOI_NEGATIVE_V1=/path/to/algovoi-rfc9421-conformance/corpus/rfc9421_negative
 ```
 
 The frozen-vector and shared-ECDSA-vector suites read reference vectors from the
-[algovoi-rfc9421-verifier-multilang](https://github.com/chopmob-cloud/algovoi-rfc9421-verifier-multilang)
+`algovoi-rfc9421-verifier-multilang` (private)
 repo, defaulting to a checkout alongside this one; override with
 `ALGOVOI_REFERENCE_VECTORS` / `ALGOVOI_REFERENCE_ECDSA_VECTORS`. When that repo
 is absent (as in CI) these tests **skip** rather than fail, so `go test ./...`
